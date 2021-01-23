@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: > 
+ CD Demo Lambda test
+Resources:
+  SharedLambdaLayer:
+        Type: AWS::Serverless::LayerVersion
+        Properties:
+            LayerName: MyLambdaLayer
+            Description: My Lambda Layer with Deserialize Function, Objectpath Module & AWS Regions JSON
+            ContentUri: dependencies/
+            CompatibleRuntimes:
+                - python3.6
+  CDDemoLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.6
+      Layers:
+        - !Ref SharedLambdaLayer
+      CodeUri: ./LambdaCode
+      Description: 'Lambda function for Sentiment Analysis'
+      Events:
+        getAZsAPI:
+          Type: Api
+          Properties:
+            Path: /getazs
+            Method: get
+      Environment:
+        Variables:
+          REGION: us-east-2
+  
